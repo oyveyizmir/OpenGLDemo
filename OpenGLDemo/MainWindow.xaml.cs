@@ -58,8 +58,7 @@ namespace OpenGLDemo
             gl.MatrixMode(MatrixMode.Projection);
             
             gl.LoadIdentity();
-            //gl.Translate(1, 0, 0);
-            //gl.Rotate(0, 70, 0);
+
             gl.Frustum(-20, 20, -20, 20, 20, 100);
             gl.LookAt(60, 0, 0, 0, 0, 0, 0, 1, 0.5);
             
