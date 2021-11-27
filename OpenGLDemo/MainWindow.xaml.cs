@@ -61,8 +61,6 @@ namespace OpenGLDemo
 
             gl.Frustum(-20, 20, -20, 20, 20, 100);
             gl.LookAt(60, 0, 0, 0, 0, 0, 0, 1, 0.5);
-            
-            
 
             //gl.Ortho(-10,10, -10,10, -10,10);
         }
