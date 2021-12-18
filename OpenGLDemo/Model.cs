@@ -13,6 +13,8 @@ namespace OpenGLDemo
     {
         public List<Point> Vertices { get; private set; }
 
+        public Point Extension { get; private set; }
+
         public void Import(string fileName)
         {
             Load(fileName);
@@ -86,6 +88,8 @@ namespace OpenGLDemo
                 point.Y -= center.Y;
                 point.Z -= center.Z;
             }
+
+            Extension = new Point(max.X - center.X, max.Y - center.Y, max.Z - center.Z);
         }
     }
 }

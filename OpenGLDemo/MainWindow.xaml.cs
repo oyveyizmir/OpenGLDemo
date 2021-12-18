@@ -35,17 +35,29 @@ namespace OpenGLDemo
 
         Model model;
 
+        
+        const double zNear = 1;
+        const double zFar = 1000;
+        const double sizeCorrectionFactor = 2;
+
         const double stepAlpha = 1 * Math.PI / 180;
         const double stepBeta = 1 * Math.PI / 180;
         const double stepR = 1;
+        const double stepFov = 1 * Math.PI / 180;
+        const double defaultFov = 30 * Math.PI / 180;
+        const double minFov = 1 * Math.PI / 180;
+        const double maxFov = 80 * Math.PI / 180;
 
         const double maxBeta = 89.5 * Math.PI / 180;
 
+        double fov = defaultFov;
         double cameraR;
         double cameraAlpha;
         double cameraBeta;
 
         bool axesVisible = true;
+
+        double[] maxExtension;
 
         enum RotationAxis
         {
@@ -60,11 +72,18 @@ namespace OpenGLDemo
         {
             InitializeComponent();
 
-            InitRotation(RotationAxis.Z);
             model = new Model();
             model.Import(@"D:\projects\OpenGLDemo\12140_Skull_v3_L2.obj");
-        }
 
+            maxExtension = new double[3]
+                {
+                    Math.Max(model.Extension.Z, model.Extension.Y),
+                    Math.Max(model.Extension.X, model.Extension.Z),
+                    Math.Max(model.Extension.Y, model.Extension.X)
+                };
+
+            InitRotation(RotationAxis.Z);
+        }
 
         private void OpenGLControl_OpenGLInitialized(object sender, OpenGLRoutedEventArgs args)
         {
@@ -101,7 +120,8 @@ namespace OpenGLDemo
             coord[((int)rotationAxis + 2) % 3] = (float)(cameraR * Math.Sin(cameraBeta));
 
             gl.LoadIdentity();
-            gl.Frustum(-20, 20, -20, 20, 20, 100);
+            double nearSize = zNear * Math.Tan(fov);
+            gl.Frustum(-nearSize, nearSize, -nearSize, nearSize, zNear, zFar);
             gl.LookAt(coord[0], coord[1], coord[2], 0, 0, 0,
                 rotationAxis == RotationAxis.X ? 1 : 0,
                 rotationAxis == RotationAxis.Y ? 1 : 0,
@@ -124,17 +144,19 @@ namespace OpenGLDemo
             gl.Begin(BeginMode.Lines);
             gl.LineWidth(5f);
 
+            float length = 1.5f * Math.Max(model.Extension.X, Math.Max(model.Extension.Y, model.Extension.Z));
+
             gl.Color(1f, 0, 0);
             gl.Vertex(0, 0, 0);
-            gl.Vertex(35, 0, 0);
+            gl.Vertex(length, 0, 0);
 
             gl.Color(0, 1f, 0);
             gl.Vertex(0, 0, 0);
-            gl.Vertex(0, 35, 0);
+            gl.Vertex(0, length, 0);
 
             gl.Color(0, 0, 1f);
             gl.Vertex(0, 0, 0);
-            gl.Vertex(0, 0, 35);
+            gl.Vertex(0, 0, length);
 
             gl.End();
         }
@@ -153,6 +175,15 @@ namespace OpenGLDemo
                 gl.Color(0, 0, 1f);
                 gl.Vertex(0, 0, i);
             }
+        }
+
+        void InitRotation(RotationAxis axis)
+        {
+            rotationAxis = axis;
+            fov = defaultFov;
+            cameraR = maxExtension[(int)axis] * sizeCorrectionFactor / Math.Tan(fov);
+            cameraAlpha = 0;
+            cameraBeta = 0;
         }
 
         public void Key_Capture(object sender, KeyEventArgs e)
@@ -192,15 +223,15 @@ namespace OpenGLDemo
                 case Key.A:
                     axesVisible = !axesVisible;
                     break;
+                case Key.PageUp:
+                    if (fov - stepFov >= minFov)
+                        fov -= stepFov;
+                    break;
+                case Key.PageDown:
+                    if (fov + stepFov <= maxFov)
+                        fov += stepFov;
+                    break;
             }
-        }
-
-        void InitRotation(RotationAxis axis)
-        {
-            rotationAxis = axis;
-            cameraR = 60;
-            cameraAlpha = 0;
-            cameraBeta = 0;
         }
 
         public void Mouse_Capture(object sender, MouseEventArgs e)
