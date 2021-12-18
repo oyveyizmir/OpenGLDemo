@@ -97,7 +97,7 @@
     </Compile>
     <Compile Include="controls.cs" />
     <Compile Include="Gl.cs" />
-    <Compile Include="Importer.cs" />
+    <Compile Include="Model.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -33,7 +33,7 @@ namespace OpenGLDemo
     {
         public delegate char Keys(object sender, KeyEventArgs e);
 
-        List<Point> points;
+        Model model;
 
         const double stepAlpha = 1 * Math.PI / 180;
         const double stepBeta = 1 * Math.PI / 180;
@@ -61,8 +61,8 @@ namespace OpenGLDemo
             InitializeComponent();
 
             initRotation(RotationAxis.Z);
-            Importer imp = new Importer();
-            points = imp.s();
+            model = new Model();
+            model.Import(@"D:\projects\OpenGLDemo\12140_Skull_v3_L2.obj");
         }
 
 
@@ -113,7 +113,7 @@ namespace OpenGLDemo
             gl.Begin(BeginMode.Points);
 
             gl.Color(0, 1F, 1F);
-            foreach (var point in points)
+            foreach (var point in model.Vertices)
                 gl.Vertex(point.X, point.Y, point.Z);
 
             gl.End();
@@ -205,28 +205,10 @@ namespace OpenGLDemo
 
         public void Mouse_Capture(object sender, MouseEventArgs e)
         {
-            /*if (this.IsActive)
-            {
-                Cursor = Cursors.None;
-                double mouseX = 0;
-                double mouseY = 0;
-                double newMouseX;
-                double newMouseY;
-                var pos = e.GetPosition(this);
-                newMouseX = pos.X;
-                newMouseY = pos.Y;
-                mouseX -= newMouseX;
-                mouseY -= newMouseY;
-                AngleX = (float)Math.Atan(mouseX / mouseY);
-                AngleZ = (float)Math.Acos(mouseY / Math.Sqrt(Math.Pow(mouseX, 2) + Math.Pow(mouseY, 2)));
-            }
-            else
-                Cursor = Cursors.Arrow;*/
         }
 
         private void Mouse_Capture(object sender, ManipulationDeltaEventArgs e)
         {
-
         }
 
         private void OpenGLControl_Resized(object sender, OpenGLRoutedEventArgs args)
@@ -234,15 +216,11 @@ namespace OpenGLDemo
             var gl = args.OpenGL;
             double winWidth = Width;
             double winHeight = Height;
-            //gl.Ortho(coef, coef, coef, coef, 0, 100);
-            
         }
 
 
         private void OpenGLControl_Loaded(object sender, RoutedEventArgs e)
         {
-
         }
-
     }
 }

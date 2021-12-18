@@ -9,12 +9,13 @@ using System.Globalization;
 
 namespace OpenGLDemo
 {
-    class Importer
+    class Model
     {
-        public List<Point> s()
-        {
+        public List<Point> Vertices { get; private set; }
 
-            using (StreamReader reader = new StreamReader(@"D:\projects\OpenGLDemo\12140_Skull_v3_L2.obj"))
+        public void Import(string fileName)
+        {
+            using (StreamReader reader = new StreamReader(fileName))
             {
                 var vertices = new List<Point>();
                 string a = null;
@@ -48,7 +49,7 @@ namespace OpenGLDemo
                             throw new Exception("unknown row type " + a);
                     }
                 }
-                return vertices;
+                Vertices = vertices;
             }
         }    
     }
