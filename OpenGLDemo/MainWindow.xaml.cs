@@ -60,7 +60,7 @@ namespace OpenGLDemo
         {
             InitializeComponent();
 
-            initRotation(RotationAxis.Z);
+            InitRotation(RotationAxis.Z);
             model = new Model();
             model.Import(@"D:\projects\OpenGLDemo\12140_Skull_v3_L2.obj");
         }
@@ -181,13 +181,13 @@ namespace OpenGLDemo
                     cameraR += stepR;
                     break;
                 case Key.X:
-                    initRotation(RotationAxis.X);
+                    InitRotation(RotationAxis.X);
                     break;
                 case Key.Y:
-                    initRotation(RotationAxis.Y);
+                    InitRotation(RotationAxis.Y);
                     break;
                 case Key.Z:
-                    initRotation(RotationAxis.Z);
+                    InitRotation(RotationAxis.Z);
                     break;
                 case Key.A:
                     axesVisible = !axesVisible;
@@ -195,7 +195,7 @@ namespace OpenGLDemo
             }
         }
 
-        void initRotation(RotationAxis axis)
+        void InitRotation(RotationAxis axis)
         {
             rotationAxis = axis;
             cameraR = 60;
