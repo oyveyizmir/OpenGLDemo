@@ -39,15 +39,28 @@ namespace OpenGLDemo
         const double stepBeta = 1 * Math.PI / 180;
         const double stepR = 1;
 
-        const double maxBeta = 90 * Math.PI / 180;
+        const double maxBeta = 89.5 * Math.PI / 180;
 
-        double cameraR = 60;
-        double cameraAlpha = 0;
-        double cameraBeta = 0;
+        double cameraR;
+        double cameraAlpha;
+        double cameraBeta;
+
+        bool axesVisible = true;
+
+        enum RotationAxis
+        {
+            Z = 0,
+            X = 1,
+            Y = 2
+        }
+
+        RotationAxis rotationAxis;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            initRotation(RotationAxis.Z);
             Importer imp = new Importer();
             points = imp.s();
         }
@@ -72,19 +85,27 @@ namespace OpenGLDemo
 
             gl.MatrixMode(MatrixMode.Modelview);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            
-            DrawLineAxes(gl);
+
+            if (axesVisible)            
+                DrawLineAxes(gl);
+
             DrawModel(gl);
         }
 
         void PositionCamera(OpenGL gl)
         {
-            float cameraZ = (float)(cameraR * Math.Cos(cameraAlpha) * Math.Cos(cameraBeta));
-            float cameraX = (float)(cameraR * Math.Sin(cameraAlpha) * Math.Cos(cameraBeta));
-            float cameraY = (float)(cameraR * Math.Sin(cameraBeta));
+            float[] coord = new float[3];
+
+            coord[(int)rotationAxis] = (float)(cameraR * Math.Cos(cameraAlpha) * Math.Cos(cameraBeta));
+            coord[((int)rotationAxis + 1) % 3] = (float)(cameraR * Math.Sin(cameraAlpha) * Math.Cos(cameraBeta));
+            coord[((int)rotationAxis + 2) % 3] = (float)(cameraR * Math.Sin(cameraBeta));
+
             gl.LoadIdentity();
             gl.Frustum(-20, 20, -20, 20, 20, 100);
-            gl.LookAt(cameraX, cameraY, cameraZ, 0, 0, 0, 0, 1, 0);
+            gl.LookAt(coord[0], coord[1], coord[2], 0, 0, 0,
+                rotationAxis == RotationAxis.X ? 1 : 0,
+                rotationAxis == RotationAxis.Y ? 1 : 0,
+                rotationAxis == RotationAxis.Z ? 1 : 0);
         }
 
         void DrawModel(OpenGL gl)
@@ -153,17 +174,33 @@ namespace OpenGLDemo
                 case Key.Right:
                     cameraAlpha += stepAlpha;
                     break;
-                case Key.PageUp:
-                    break;
-                case Key.PageDown:
-                    break;
                 case Key.Add:
                     cameraR -= stepR;
                     break;
                 case Key.Subtract:
                     cameraR += stepR;
                     break;
+                case Key.X:
+                    initRotation(RotationAxis.X);
+                    break;
+                case Key.Y:
+                    initRotation(RotationAxis.Y);
+                    break;
+                case Key.Z:
+                    initRotation(RotationAxis.Z);
+                    break;
+                case Key.A:
+                    axesVisible = !axesVisible;
+                    break;
             }
+        }
+
+        void initRotation(RotationAxis axis)
+        {
+            rotationAxis = axis;
+            cameraR = 60;
+            cameraAlpha = 0;
+            cameraBeta = 0;
         }
 
         public void Mouse_Capture(object sender, MouseEventArgs e)
