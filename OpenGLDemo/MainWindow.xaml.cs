@@ -31,14 +31,19 @@ namespace OpenGLDemo
     /// </summary>
     public partial class MainWindow : Window
     {
-        public double X = 0, Z = 0;//-60;
-        public float AngleX, AngleY, AngleZ;
-
         public delegate char Keys(object sender, KeyEventArgs e);
 
         List<Point> points;
 
-        bool preserveRotation = true;
+        const double stepAlpha = 1 * Math.PI / 180;
+        const double stepBeta = 1 * Math.PI / 180;
+        const double stepR = 1;
+
+        const double maxBeta = 90 * Math.PI / 180;
+
+        double cameraR = 60;
+        double cameraAlpha = 0;
+        double cameraBeta = 0;
 
         public MainWindow()
         {
@@ -54,15 +59,6 @@ namespace OpenGLDemo
             
             gl.Enable(OpenGL.GL_DEPTH_TEST);
             gl.ClearColor(0.3f, 0.3f, 0.3f, 0.3f);
-
-            gl.MatrixMode(MatrixMode.Projection);
-            
-            gl.LoadIdentity();
-
-            gl.Frustum(-20, 20, -20, 20, 20, 100);
-            gl.LookAt(60, 0, 0, 0, 0, 0, 0, 1, 0.5);
-
-            //gl.Ortho(-10,10, -10,10, -10,10);
         }
         
         
@@ -70,38 +66,36 @@ namespace OpenGLDemo
         {
             var gl = args.OpenGL;
 
-            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.MatrixMode(MatrixMode.Projection);
+
+            PositionCamera(gl);
 
             gl.MatrixMode(MatrixMode.Modelview);
-            if (!preserveRotation)
-                gl.PushMatrix();
-
-            gl.Translate(0, 0, Z);
-            gl.Rotate(AngleX, AngleY, AngleZ);
-
-            SharpGL.SceneGraph.Matrix m = gl.GetModelViewMatrix();
-
-            if (preserveRotation)
-            {
-                AngleX = 0;
-                AngleY = 0;
-                AngleZ = 0;
-                Z = 0;
-            }
-            //gl.Translate(0, 0, -9);
-
-            DrawLineAxes(gl);
-
-            gl.Begin(BeginMode.Points);
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             
+            DrawLineAxes(gl);
+            DrawModel(gl);
+        }
+
+        void PositionCamera(OpenGL gl)
+        {
+            float cameraZ = (float)(cameraR * Math.Cos(cameraAlpha) * Math.Cos(cameraBeta));
+            float cameraX = (float)(cameraR * Math.Sin(cameraAlpha) * Math.Cos(cameraBeta));
+            float cameraY = (float)(cameraR * Math.Sin(cameraBeta));
+            gl.LoadIdentity();
+            gl.Frustum(-20, 20, -20, 20, 20, 100);
+            gl.LookAt(cameraX, cameraY, cameraZ, 0, 0, 0, 0, 1, 0);
+        }
+
+        void DrawModel(OpenGL gl)
+        {
+            gl.Begin(BeginMode.Points);
+
             gl.Color(0, 1F, 1F);
             foreach (var point in points)
                 gl.Vertex(point.X, point.Y, point.Z);
-            
-            gl.End();
 
-            if (!preserveRotation)
-                gl.PopMatrix();
+            gl.End();
         }
 
         void DrawLineAxes(OpenGL gl)
@@ -143,36 +137,31 @@ namespace OpenGLDemo
         public void Key_Capture(object sender, KeyEventArgs e)
         {
 
-            float x = 1f, y = 1f, z = 1f;
             switch (e.Key)
             {
-                case Key.W:
                 case Key.Up:
-                    AngleX -= x;
+                    if (cameraBeta + stepBeta <= maxBeta)
+                        cameraBeta += stepBeta;
                     break;
-                case Key.S:
                 case Key.Down:
-                    AngleX += x;
+                    if (cameraBeta - stepBeta >= -maxBeta)
+                        cameraBeta -= stepBeta;
                     break;
-                case Key.A:
                 case Key.Left:
-                    AngleY -= y;
+                    cameraAlpha -= stepAlpha;
                     break;
-                case Key.D:
                 case Key.Right:
-                    AngleY += y;
+                    cameraAlpha += stepAlpha;
                     break;
                 case Key.PageUp:
-                    AngleZ -= z;
                     break;
                 case Key.PageDown:
-                    AngleZ += z;
                     break;
                 case Key.Add:
-                    Z += 1;
+                    cameraR -= stepR;
                     break;
                 case Key.Subtract:
-                    Z -= 1;
+                    cameraR += stepR;
                     break;
             }
         }

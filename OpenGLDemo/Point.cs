@@ -8,7 +8,7 @@ namespace OpenGLDemo
 {
     class Point
     {
-        public readonly float X, Y, Z;
+        public float X, Y, Z;
         public Point(float x, float y, float z)
         {
             X = x;
