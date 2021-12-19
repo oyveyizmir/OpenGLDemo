@@ -26,17 +26,17 @@ namespace OpenGLDemo
             using (StreamReader reader = new StreamReader(fileName))
             {
                 var vertices = new List<Point>();
-                string a = null;
-                while ((a = reader.ReadLine()) != null)
+                string line = null;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    string[] lines = a.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] lines = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (lines.Length == 0)
                         continue;
                     switch (lines[0])
                     {
                         case "v":
                             if (lines.Length != 4)
-                                throw new Exception("wrong row format" + a);
+                                throw new Exception("wrong row format" + line);
                             Point point = new Point(float.Parse(lines[1], CultureInfo.InvariantCulture),
                                 float.Parse(lines[2], CultureInfo.InvariantCulture),
                                 float.Parse(lines[3], CultureInfo.InvariantCulture));
@@ -54,7 +54,7 @@ namespace OpenGLDemo
                         case "g":
                             break;
                         default:
-                            throw new Exception("unknown row type " + a);
+                            throw new Exception("unknown row type " + line);
                     }
                 }
                 Vertices = vertices;
