@@ -161,6 +161,7 @@ namespace OpenGLDemo
             gl.End();
         }
 
+        // Draws axes as dotted lines
         void DrawDotAxes(OpenGL gl)
         {
             gl.Color(1f, 1f, 1f);
