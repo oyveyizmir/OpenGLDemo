@@ -73,7 +73,7 @@ namespace OpenGLDemo
             InitializeComponent();
 
             model = new Model();
-            model.Import(@"D:\projects\OpenGLDemo\12140_Skull_v3_L2.obj");
+            model.Import(@"D:\projects\OpenGLDemo\12140_Skull_v3_L2.obj"); //TODO: pass a command line argument
 
             maxExtension = new double[3]
                 {
@@ -139,6 +139,7 @@ namespace OpenGLDemo
             gl.End();
         }
 
+        // Draws axes as solid lines
         void DrawLineAxes(OpenGL gl)
         {
             gl.Begin(BeginMode.Lines);
